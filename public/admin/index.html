@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Panel · Cindy Mayorista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+:root {
+  --vino: #540111;
+  --vino-hondo: #3a000b;
+  --nude: #f3d0b1;
+  --crema: #fbf2e9;
+  --tinta: #130a06;
+  --linea: #ead2bd;
+  --suave: #6e5148;
+  --bien: #25603a;
+  --mal: #9b1c1c;
+  --display: "Optima", "Optima nova", "Marcellus", Candara, serif;
+  --texto: "Catamaran", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --logo: url("/img/logo.png");
+  /* Layout: barra vino con el logo, resumen arriba, una tarjeta por sección con sus productos en filas */
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--crema); color: var(--tinta); font-family: var(--texto); font-size: 16px; line-height: 1.5; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--vino); outline-offset: 2px; }
+h1, h2, h3 { font-weight: 400; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.envoltura { width: min(1100px, 100% - 32px); margin-inline: auto; }
+.logo { display: block; aspect-ratio: 760 / 291; background: var(--nude); -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--vino); background: #fff; color: var(--vino); font-weight: 600; font-size: 15px; line-height: 1.15; cursor: pointer; text-decoration: none; white-space: nowrap; }
+.btn:hover { background: #f7e3d1; }
+.btn-principal { background: var(--vino); color: var(--nude); }
+.btn-principal:hover { background: var(--vino-hondo); }
+.btn-peligro { background: var(--mal); border-color: var(--mal); color: #fff; }
+.btn-peligro:hover { background: #7f1414; }
+.btn-chico { padding: 6px 12px; font-size: 14px; }
+.btn[disabled] { opacity: .5; cursor: default; }
+.link { border: 0; background: none; padding: 4px 2px; color: var(--vino); font-size: 15px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+/* Ingreso */
+.ingreso { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; background: var(--vino); }
+.ingreso form { width: min(380px, 100%); background: var(--crema); border-radius: 18px; padding: 30px 24px 26px; display: grid; gap: 10px; }
+.ingreso .logo { width: 210px; margin: 0 auto 8px; background: var(--vino); }
+.ingreso h1 { font-family: var(--display); font-size: 24px; text-align: center; color: var(--vino); margin-bottom: 6px; }
+.ingreso label { font-size: 14px; color: var(--suave); }
+.ingreso input { width: 100%; padding: 11px 14px; border: 1px solid var(--linea); border-radius: 10px; background: #fff; }
+
+/* Barra superior */
+.arriba { background: var(--vino); color: var(--nude); }
+.arriba .envoltura { display: flex; align-items: center; gap: 16px; padding: 14px 0; }
+.arriba .logo { width: 130px; flex: none; }
+.arriba .titulo { font-size: 13px; letter-spacing: .16em; text-transform: uppercase; opacity: .85; }
+.arriba nav { margin-left: auto; display: flex; gap: 8px; }
+.arriba .btn { background: transparent; color: var(--nude); border-color: rgba(243, 208, 177, .5); }
+.arriba .btn:hover { background: rgba(243, 208, 177, .12); }
+.aviso-demo { background: #fff4d6; border-bottom: 1px solid #ecd9a3; color: #5c4200; font-size: 15px; }
+.aviso-demo .envoltura { padding: 10px 0; }
+
+main { padding: 26px 0 90px; display: grid; gap: 18px; }
+.cabecera-panel { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.cabecera-panel h1 { font-family: var(--display); font-size: 32px; color: var(--vino); }
+.guardado { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 999px; background: #e9f4ec; color: var(--bien); }
+.guardado::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+.guardado.pendiente, .guardado.guardando { background: #f7ead9; color: #7a4a12; }
+.guardado.error { background: #fbe4e4; color: var(--mal); }
+.guardado .link { font-size: 14px; color: inherit; padding: 0; }
+.resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.dato { background: #fff; border: 1px solid var(--linea); border-radius: 12px; padding: 10px 14px; }
+.dato b { display: block; font-family: var(--display); font-weight: 400; font-size: 28px; line-height: 1.1; color: var(--vino); font-variant-numeric: tabular-nums; }
+.dato span { font-size: 14px; color: var(--suave); }
+.banner-ejemplo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; background: #f7e3d1; border: 1px dashed #dcb594; border-radius: 12px; padding: 12px 16px; }
+.herramientas { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.buscar { margin-left: auto; }
+.buscar input { width: 250px; padding: 9px 16px; border: 1px solid var(--linea); border-radius: 999px; background: #fff; }
+.lista { display: grid; gap: 16px; }
+.tienda-datos { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 28px; background: #fff; border: 1px solid var(--linea); border-radius: 12px; padding: 12px 16px; }
+.tienda-datos div { display: grid; }
+.tienda-datos b { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--suave); }
+.tienda-datos span { font-variant-numeric: tabular-nums; }
+.tienda-datos .btn { margin-left: auto; }
+.modal.medio { width: min(780px, 100%); }
+.dia { display: grid; grid-template-columns: 100px 120px minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0e2d5; }
+.dia.cabeza { padding: 0 0 4px; font-size: 13px; font-weight: 500; color: var(--suave); }
+.turno { display: flex; align-items: center; gap: 6px; color: var(--suave); }
+.turno select { width: 100%; min-width: 0; padding: 7px 8px; border: 1px solid var(--linea); border-radius: 8px; background: #fff; font-variant-numeric: tabular-nums; }
+.dia.cerrado .turno { opacity: .35; pointer-events: none; }
+.vista-horario { background: #fff; border: 1px solid var(--linea); border-radius: 12px; padding: 10px 14px; display: grid; gap: 2px; }
+.vista-horario b { font-size: 13px; font-weight: 500; color: var(--suave); }
+
+/* Secciones y productos */
+.seccion { background: #fff; border: 1px solid var(--linea); border-radius: 16px; overflow: hidden; scroll-margin-top: 16px; }
+.seccion-cab { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 14px 16px; background: #fdf6ef; border-bottom: 1px solid var(--linea); }
+.seccion-cab h2 { font-family: var(--display); font-size: 23px; letter-spacing: .07em; text-transform: uppercase; color: var(--vino); }
+.seccion-cab .cuenta { font-size: 14px; color: var(--suave); }
+.seccion-cab .acc { margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px; }
+.icono { width: 34px; height: 34px; flex: none; display: inline-grid; place-items: center; border: 1px solid var(--linea); border-radius: 50%; background: #fff; color: var(--vino); font-size: 17px; line-height: 1; cursor: pointer; }
+.icono:hover { border-color: var(--vino); }
+.icono[disabled] { opacity: .3; cursor: default; }
+.fila { display: grid; grid-template-columns: 56px minmax(0, 1fr) 150px 140px auto; align-items: center; gap: 14px; padding: 10px 16px; border-bottom: 1px solid #f3e6da; }
+.mini { width: 56px; height: 70px; border-radius: 8px; overflow: hidden; background: #f6e2cf; display: grid; place-items: center; text-align: center; font-size: 11px; line-height: 1.2; color: var(--suave); }
+.mini img { width: 100%; height: 100%; object-fit: cover; }
+.fila-info strong { display: block; font-weight: 600; line-height: 1.3; }
+.fila-info span { display: block; font-size: 14px; color: var(--suave); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.etq { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--vino); color: var(--nude); font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; vertical-align: 2px; }
+.fila-precio { font-weight: 700; color: var(--vino); font-variant-numeric: tabular-nums; }
+.fila-precio.consultar { font-weight: 500; color: var(--suave); }
+.fila-precio small { display: block; font-size: 13px; font-weight: 400; color: var(--suave); }
+.fila-acc { display: flex; gap: 6px; justify-content: flex-end; }
+.fila.agotado .mini, .fila.agotado .fila-info { opacity: .45; }
+.vacia { padding: 16px; color: var(--suave); }
+.agregar-aqui { padding: 12px 16px; }
+
+/* Interruptor disponible / agotado */
+.interruptor { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; user-select: none; }
+.interruptor input { appearance: none; -webkit-appearance: none; position: relative; flex: none; width: 42px; height: 24px; margin: 0; border-radius: 999px; background: #cfb8a6; cursor: pointer; transition: background .2s; }
+.interruptor input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .2s; }
+.interruptor input:checked { background: #2f8a4f; }
+.interruptor input:checked::after { transform: translateX(18px); }
+
+/* Ventanas */
+.fondo-modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(19, 10, 6, .5); overflow-y: auto; }
+.modal { width: min(560px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; background: var(--crema); border-radius: 18px; padding: 22px; display: grid; gap: 14px; }
+.modal.ancho { width: min(1000px, 100%); }
+.modal h2 { font-family: var(--display); font-size: 25px; color: var(--vino); }
+.modal form { display: grid; gap: 14px; }
+.campo { display: grid; gap: 4px; }
+.campo > label, .campo > span { font-size: 14px; font-weight: 500; color: var(--suave); }
+.campo input, .campo select, .campo textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--linea); border-radius: 10px; background: #fff; }
+.campo textarea { resize: vertical; }
+.dos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+fieldset { margin: 0; padding: 10px 14px 14px; border: 1px solid var(--linea); border-radius: 12px; display: grid; gap: 10px; }
+legend { padding: 0 6px; font-size: 14px; font-weight: 500; color: var(--suave); }
+.radio { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.radio input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--vino); flex: none; }
+.precio-campo { display: flex; align-items: center; gap: 8px; padding-left: 28px; }
+.precio-campo input { max-width: 200px; padding: 9px 12px; border: 1px solid var(--linea); border-radius: 10px; background: #fff; font-variant-numeric: tabular-nums; }
+.ayuda { font-size: 14px; color: var(--suave); }
+.error { font-size: 15px; color: var(--mal); }
+.error:empty { display: none; }
+.modal-pie { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; padding-top: 4px; }
+.foto-campo { display: flex; align-items: center; gap: 16px; }
+.foto-prev { width: 100px; height: 125px; flex: none; border-radius: 10px; overflow: hidden; background: #f6e2cf; display: grid; place-items: center; text-align: center; font-size: 13px; color: var(--suave); }
+.foto-prev img { width: 100%; height: 100%; object-fit: cover; }
+.foto-acc { display: grid; gap: 6px; justify-items: start; }
+.chips-col { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-col { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px 5px 7px; border: 1px solid var(--linea); border-radius: 999px; background: #fff; font-size: 14px; text-transform: capitalize; cursor: pointer; }
+.chip-col span { width: 15px; height: 15px; border-radius: 50%; border: 1px solid rgba(19, 10, 6, .25); }
+.chip-col[aria-pressed="true"] { border-color: var(--vino); background: #f7e3d1; box-shadow: inset 0 0 0 1px var(--vino); }
+
+/* Importar Excel */
+.tabla-imp { max-height: 52vh; overflow: auto; border: 1px solid var(--linea); border-radius: 12px; background: #fff; }
+.tabla-imp table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 14px; }
+.tabla-imp th { position: sticky; top: 0; z-index: 1; padding: 8px 10px; background: #fdf6ef; border-bottom: 1px solid var(--linea); text-align: left; font-weight: 600; }
+.tabla-imp td { padding: 6px 10px; border-bottom: 1px solid #f3e6da; vertical-align: middle; }
+.tabla-imp td:first-child { color: var(--suave); font-variant-numeric: tabular-nums; }
+.tabla-imp .mini { width: 40px; height: 50px; }
+.tabla-imp tr.mal td { background: #fdf0f0; }
+.est-ok { color: var(--bien); font-weight: 600; }
+.est-aviso { color: #7a4a12; }
+.est-mal { color: var(--mal); }
+.barra-prog { height: 10px; border-radius: 999px; background: #ecd9c6; overflow: hidden; }
+.barra-prog div { height: 100%; width: 0; background: var(--vino); transition: width .2s; }
+
+@media (max-width: 780px) {
+  .fila { grid-template-columns: 56px minmax(0, 1fr) auto; grid-template-areas: "mini info info" "mini precio disp" "acc acc acc"; row-gap: 8px; }
+  .fila .mini { grid-area: mini; align-self: start; }
+  .fila-info { grid-area: info; }
+  .fila-precio { grid-area: precio; }
+  .fila .interruptor { grid-area: disp; justify-self: end; }
+  .fila-acc { grid-area: acc; justify-content: flex-start; flex-wrap: wrap; }
+  .buscar { margin-left: 0; width: 100%; }
+  .buscar input { width: 100%; }
+  .arriba .titulo { display: none; }
+  .dos { grid-template-columns: 1fr; }
+  .dia { grid-template-columns: 1fr auto; grid-template-areas: "nombre abierto" "t1 t1" "t2 t2"; }
+  .dia > strong { grid-area: nombre; }
+  .dia > .interruptor { grid-area: abierto; }
+  .dia > .turno:nth-of-type(1) { grid-area: t1; }
+  .dia > .turno:nth-of-type(2) { grid-area: t2; }
+  .dia.cabeza { display: none; }
+  .tienda-datos .btn { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<section class="ingreso" id="ingreso" hidden>
+  <form id="f-ingreso" novalidate>
+    <span class="logo" role="img" aria-label="Cindy Mayorista"></span>
+    <h1>Panel de administración</h1>
+    <label for="clave">Contraseña</label>
+    <input id="clave" type="password" autocomplete="current-password">
+    <p class="error" id="ingreso-error" role="alert"></p>
+    <button class="btn btn-principal" type="submit" id="entrar">Entrar</button>
+    <p class="ayuda" id="ingreso-demo" hidden>Modo de prueba: entrá con cualquier contraseña.</p>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <header class="arriba">
+    <div class="envoltura">
+      <span class="logo" role="img" aria-label="Cindy Mayorista"></span>
+      <span class="titulo">Panel de administración</span>
+      <nav>
+        <a class="btn btn-chico" href="/" target="_blank" rel="noopener">Ver página</a>
+        <button class="btn btn-chico" type="button" id="salir">Salir</button>
+      </nav>
+    </div>
+  </header>
+  <div class="aviso-demo" id="aviso-demo" hidden>
+    <div class="envoltura"><b>Modo de prueba.</b> Este panel no está conectado al servidor, así que los cambios no se guardan: al recargar se pierden. En Netlify, con la contraseña configurada, todo queda guardado.</div>
+  </div>
+  <main class="envoltura">
+    <div class="cabecera-panel">
+      <h1>Catálogo</h1>
+      <span class="guardado" id="guardado" role="status">Todo guardado</span>
+    </div>
+    <div class="resumen" id="resumen"></div>
+    <div class="tienda-datos" id="tienda-datos"></div>
+    <div class="banner-ejemplo" id="banner-ejemplo" hidden>
+      <span id="texto-ejemplo"></span>
+      <button class="btn btn-chico" type="button" id="borrar-ejemplos">Borrar productos de ejemplo</button>
+    </div>
+    <div class="herramientas">
+      <button class="btn btn-principal" type="button" id="nueva-seccion">+ Nueva sección</button>
+      <button class="btn" type="button" id="importar">Importar Excel</button>
+      <button class="btn" type="button" id="exportar">Descargar Excel</button>
+      <a class="link" href="/plantilla-productos.xlsx" download>Plantilla de Excel</a>
+      <div class="buscar"><input id="buscar" type="search" placeholder="Buscar producto" aria-label="Buscar producto"></div>
+      <input type="file" id="archivo-excel" accept=".xlsx" hidden>
+    </div>
+    <div class="lista" id="lista"></div>
+  </main>
+</div>
+
+<div class="fondo-modal" id="fondo-modal" hidden>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="/tienda.js"></script>
+<script>
+/* ============================================================
+   PANEL DE ADMINISTRACIÓN · CINDY MAYORISTA
+   Guarda el catálogo y las fotos en Netlify (/api/...).
+   Sin servidor (por ejemplo, en la vista de prueba) funciona
+   en "modo de prueba": se puede usar pero no guarda.
+   ============================================================ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const sinTildes = (t) => String(t ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+const miles = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const guaranies = (n) => "Gs. " + miles(n);
+const slug = (t) => sinTildes(t).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36)).replace(/-/g, "").slice(0, 12);
+const copia = (o) => JSON.parse(JSON.stringify(o));
+const separar = (t) => String(t ?? "").split(/[,;\n]/).map((x) => x.trim()).filter(Boolean);
+const leerGuaranies = (t) => { const d = String(t ?? "").replace(/\D/g, ""); return d ? Number(d) : null; };
+const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
+
+let clave = "";
+let catalogo = { secciones: [] };
+let fotosGuardadas = new Set();
+
+/* ---------- Conexión con el servidor ---------- */
+const API = { demo: false };
+
+async function hayServidor() {
+  if (!/^https?:$/.test(location.protocol)) return false;
+  try {
+    const r = await fetch("/api/verificar", { cache: "no-store" });
+    return [200, 401, 503].includes(r.status) && (r.headers.get("content-type") || "").includes("json");
+  } catch (e) { return false; }
+}
+async function pedir(ruta, op = {}) {
+  const r = await fetch(ruta, { ...op, cache: "no-store", headers: { ...(op.headers || {}), "x-clave": encodeURIComponent(clave) } });
+  if (r.status === 401) { salir("Tu sesión venció o cambió la contraseña. Entrá de nuevo."); throw new Error("sesion"); }
+  return r;
+}
+async function textoError(r, porDefecto) { try { return (await r.json()).error || porDefecto; } catch (e) { return porDefecto; } }
+
+API.cargar = async () => {
+  if (API.demo) return null;
+  const r = await fetch("/api/catalogo", { cache: "no-store" });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(await textoError(r, "el servidor no respondió"));
+  return r.json();
+};
+API.guardar = async (datos) => {
+  if (API.demo) return;
+  const r = await pedir("/api/catalogo", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(datos) });
+  if (!r.ok) throw new Error(await textoError(r, "No se pudo guardar."));
+};
+API.subirFoto = async (blob) => {
+  if (API.demo) return URL.createObjectURL(blob);
+  const r = await pedir("/api/foto", { method: "POST", headers: { "content-type": blob.type }, body: blob });
+  if (!r.ok) throw new Error(await textoError(r, "No se pudo subir la foto."));
+  return (await r.json()).url;
+};
+API.borrarFoto = async (url) => {
+  if (!url) return;
+  if (API.demo) { if (url.startsWith("blob:")) URL.revokeObjectURL(url); return; }
+  if (!url.startsWith("/api/foto/")) return;
+  try { await pedir(url, { method: "DELETE" }); } catch (e) { /* si falla, la foto queda sin usar */ }
+};
+
+/* ---------- Ingreso ---------- */
+$("#f-ingreso").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const valor = $("#clave").value;
+  const err = $("#ingreso-error");
+  err.textContent = "";
+  if (!valor) { err.textContent = "Escribí la contraseña."; $("#clave").focus(); return; }
+  if (API.demo) { clave = valor; return entrar(); }
+  const boton = $("#entrar");
+  boton.disabled = true; boton.textContent = "Entrando…";
+  try {
+    const r = await fetch("/api/verificar", { cache: "no-store", headers: { "x-clave": encodeURIComponent(valor) } });
+    if (r.ok) {
+      clave = valor;
+      try { sessionStorage.setItem("cindy-clave", valor); } catch (x) { /* sin almacenamiento */ }
+      await entrar();
+    } else err.textContent = await textoError(r, "Contraseña incorrecta.");
+  } catch (x) { err.textContent = "No se pudo conectar. Revisá tu internet y probá de nuevo."; }
+  boton.disabled = false; boton.textContent = "Entrar";
+});
+
+function salir(mensaje = "") {
+  clave = "";
+  try { sessionStorage.removeItem("cindy-clave"); } catch (e) { /* nada */ }
+  forzarCierreModal();
+  $("#app").hidden = true;
+  $("#ingreso").hidden = false;
+  $("#clave").value = "";
+  $("#ingreso-error").textContent = mensaje;
+  $("#clave").focus();
+}
+$("#salir").addEventListener("click", () => {
+  if (estadoActual === "pendiente" || estadoActual === "guardando") { guardarAhora(); }
+  salir();
+});
+
+async function entrar() {
+  $("#ingreso").hidden = true;
+  $("#app").hidden = false;
+  $("#aviso-demo").hidden = !API.demo;
+  $("#lista").innerHTML = '<div class="seccion"><p class="vacia">Cargando catálogo…</p></div>';
+  let datos;
+  try { datos = await API.cargar(); }
+  catch (e) { $("#lista").innerHTML = `<div class="seccion"><p class="vacia error">No se pudo leer el catálogo (${esc(e.message)}). Recargá la página.</p></div>`; return; }
+  catalogo = datos && Array.isArray(datos.secciones) ? datos : { secciones: copia(TIENDA.secciones) };
+  normalizar(catalogo);
+  if (!catalogo.tienda || !Array.isArray(catalogo.tienda.horario)) catalogo.tienda = { horario: copia(TIENDA.horario), whatsapp: TIENDA.whatsapp, ...(catalogo.tienda || {}) };
+  if (!Array.isArray(catalogo.tienda.horario)) catalogo.tienda.horario = copia(TIENDA.horario);
+  fotosGuardadas = fotosDe(catalogo);
+  estadoGuardado(datos ? "ok" : "inicio");
+  pintar();
+}
+function normalizar(cat) {
+  const ids = new Set();
+  cat.secciones.forEach((s) => {
+    if (!s.id) s.id = idSeccion(s.nombre, cat);
+    s.productos = Array.isArray(s.productos) ? s.productos : [];
+    s.productos.forEach((p) => { if (!p.id || ids.has(p.id)) p.id = uid(); ids.add(p.id); });
+  });
+}
+function idSeccion(nombre, cat) {
+  const base = slug(nombre) || "seccion";
+  let id = base, n = 2;
+  while (cat.secciones.some((x) => x.id === id)) id = `${base}-${n++}`;
+  return id;
+}
+const fotosDe = (cat) => new Set(cat.secciones.flatMap((s) => s.productos.map((p) => p.imagen).filter(Boolean)));
+
+/* ---------- Guardado automático ---------- */
+let tGuardar = null, guardando = false, otraVez = false, estadoActual = "ok";
+function estadoGuardado(estado) {
+  estadoActual = estado;
+  const el = $("#guardado");
+  el.className = "guardado " + estado;
+  el.innerHTML = {
+    inicio: "Catálogo de ejemplo (todavía sin guardar)",
+    ok: API.demo ? "Cambios aplicados (modo de prueba)" : "Todo guardado",
+    pendiente: "Cambios sin guardar…",
+    guardando: "Guardando…",
+    error: 'No se pudo guardar · <button class="link" type="button" id="reintentar">Reintentar</button>'
+  }[estado];
+}
+document.addEventListener("click", (e) => { if (e.target.id === "reintentar") guardarAhora(); });
+
+function cambio() {
+  pintar();
+  estadoGuardado("pendiente");
+  clearTimeout(tGuardar);
+  tGuardar = setTimeout(guardarAhora, 700);
+}
+async function guardarAhora() {
+  clearTimeout(tGuardar);
+  if (guardando) { otraVez = true; return; }
+  guardando = true;
+  estadoGuardado("guardando");
+  const datos = copia(catalogo);
+  datos.version = 1;
+  try {
+    await API.guardar(datos);
+    const ahora = fotosDe(datos);
+    fotosGuardadas.forEach((url) => { if (!ahora.has(url)) API.borrarFoto(url); });
+    fotosGuardadas = ahora;
+    estadoGuardado("ok");
+  } catch (e) {
+    if (e.message !== "sesion") estadoGuardado("error");
+  }
+  guardando = false;
+  if (otraVez) { otraVez = false; guardarAhora(); }
+}
+window.addEventListener("beforeunload", (e) => {
+  if (estadoActual === "pendiente" || estadoActual === "guardando" || estadoActual === "error") { e.preventDefault(); e.returnValue = ""; }
+});
+
+/* ---------- Lista de secciones y productos ---------- */
+function pintar() {
+  const todos = catalogo.secciones.flatMap((s) => s.productos);
+  const ejemplos = todos.filter((p) => p.ejemplo).length;
+  $("#resumen").innerHTML = [
+    [catalogo.secciones.length, catalogo.secciones.length === 1 ? "sección" : "secciones"],
+    [todos.length, todos.length === 1 ? "producto" : "productos"],
+    [todos.filter((p) => p.disponible === false).length, "agotados"],
+    [todos.filter((p) => !p.imagen).length, "sin foto"],
+    [todos.filter((p) => !p.precio).length, "con «Consultar»"]
+  ].map(([n, t]) => `<div class="dato"><b>${n}</b><span>${t}</span></div>`).join("");
+  const t = catalogo.tienda || { horario: [], whatsapp: "" };
+  $("#tienda-datos").innerHTML = `<div><b>Horario de atención</b><span>${t.horario.length ? t.horario.map((h) => `${esc(h.etiqueta)}: ${h.turnos.map(([a, c]) => `${a} a ${c}`).join(" y ")}`).join(" · ") : "Sin horario cargado"}</span></div>
+    <div><b>WhatsApp de pedidos</b><span>${t.whatsapp ? formatoTel(t.whatsapp) : "Sin número"}</span></div>
+    <button class="btn btn-chico" type="button" id="editar-tienda">Editar horario y WhatsApp</button>`;
+  $("#banner-ejemplo").hidden = !ejemplos;
+  $("#texto-ejemplo").textContent = `Hay ${plural(ejemplos, "producto", "productos")} de ejemplo (con la etiqueta «Ejemplo»). Borralos cuando cargues los reales.`;
+
+  if (!catalogo.secciones.length) {
+    $("#lista").innerHTML = '<div class="seccion"><p class="vacia">Todavía no hay secciones. Creá la primera con «+ Nueva sección» o importá un Excel.</p></div>';
+    return;
+  }
+  const q = sinTildes($("#buscar").value);
+  const html = catalogo.secciones.map((s, i) => {
+    const prods = s.productos.filter((p) => !q || sinTildes(`${p.nombre} ${p.descripcion || ""} ${s.nombre}`).includes(q));
+    if (q && !prods.length) return "";
+    return `<section class="seccion" data-sec="${esc(s.id)}">
+      <div class="seccion-cab">
+        <h2>${esc(s.nombre)}</h2>
+        <span class="cuenta">${plural(s.productos.length, "producto", "productos")}</span>
+        <div class="acc">
+          <button class="icono" type="button" data-accion="subir-sec" aria-label="Subir la sección ${esc(s.nombre)}" ${i === 0 ? "disabled" : ""}>↑</button>
+          <button class="icono" type="button" data-accion="bajar-sec" aria-label="Bajar la sección ${esc(s.nombre)}" ${i === catalogo.secciones.length - 1 ? "disabled" : ""}>↓</button>
+          <button class="btn btn-chico" type="button" data-accion="renombrar-sec">Cambiar nombre</button>
+          <button class="btn btn-chico" type="button" data-accion="borrar-sec">Eliminar</button>
+        </div>
+      </div>
+      <div class="filas">${prods.length ? prods.map((p) => filaProducto(s, p, !!q)).join("") : '<p class="vacia">Esta sección no tiene productos. No aparece en la página hasta que le agregues uno.</p>'}</div>
+      <div class="agregar-aqui"><button class="btn btn-chico" type="button" data-accion="nuevo-prod">+ Agregar producto a ${esc(s.nombre)}</button></div>
+    </section>`;
+  }).join("");
+  $("#lista").innerHTML = html || '<div class="seccion"><p class="vacia">No hay productos con esa búsqueda.</p></div>';
+}
+function filaProducto(s, p, buscando) {
+  const i = s.productos.indexOf(p);
+  const disp = p.disponible !== false;
+  return `<div class="fila${disp ? "" : " agotado"}" data-pid="${esc(p.id)}">
+    <div class="mini">${p.imagen ? `<img src="${esc(p.imagen)}" alt="" loading="lazy">` : "Sin foto"}</div>
+    <div class="fila-info"><strong>${esc(p.nombre)}${p.ejemplo ? '<em class="etq">Ejemplo</em>' : ""}</strong><span>${esc(p.descripcion || "Sin descripción")}</span></div>
+    <div class="fila-precio${p.precio ? "" : " consultar"}">${p.precio ? guaranies(p.precio) : "Consultar precio"}${p.minimo ? `<small>Mínimo ${p.minimo} u.</small>` : ""}</div>
+    <label class="interruptor"><input type="checkbox" data-accion="disponible" ${disp ? "checked" : ""}><span>${disp ? "Disponible" : "Agotado"}</span></label>
+    <div class="fila-acc">
+      ${buscando ? "" : `<button class="icono" type="button" data-accion="subir-prod" aria-label="Subir ${esc(p.nombre)}" ${i === 0 ? "disabled" : ""}>↑</button>
+      <button class="icono" type="button" data-accion="bajar-prod" aria-label="Bajar ${esc(p.nombre)}" ${i === s.productos.length - 1 ? "disabled" : ""}>↓</button>`}
+      <button class="btn btn-chico" type="button" data-accion="editar-prod">Editar</button>
+      <button class="btn btn-chico" type="button" data-accion="borrar-prod">Eliminar</button>
+    </div>
+  </div>`;
+}
+function mover(lista, item, d) {
+  const i = lista.indexOf(item), j = i + d;
+  if (i < 0 || j < 0 || j >= lista.length) return;
+  [lista[i], lista[j]] = [lista[j], lista[i]];
+}
+function enfocar(secId, pid, accion) {
+  const base = pid ? `.seccion[data-sec="${CSS.escape(secId)}"] .fila[data-pid="${CSS.escape(pid)}"]` : `.seccion[data-sec="${CSS.escape(secId)}"] .seccion-cab`;
+  const b = $(`${base} [data-accion="${accion}"]`);
+  if (b && !b.disabled) b.focus();
+  else $(`${base} [data-accion]:not([disabled])`)?.focus();
+}
+
+$("#lista").addEventListener("click", async (e) => {
+  const b = e.target.closest("button[data-accion]");
+  if (!b) return;
+  const s = catalogo.secciones.find((x) => x.id === b.closest(".seccion")?.dataset.sec);
+  if (!s) return;
+  const pid = b.closest(".fila")?.dataset.pid;
+  const p = pid ? s.productos.find((x) => x.id === pid) : null;
+  const accion = b.dataset.accion;
+
+  if (accion === "subir-sec" || accion === "bajar-sec") { mover(catalogo.secciones, s, accion === "subir-sec" ? -1 : 1); cambio(); enfocar(s.id, null, accion); }
+  else if (accion === "subir-prod" || accion === "bajar-prod") { if (!p) return; mover(s.productos, p, accion === "subir-prod" ? -1 : 1); cambio(); enfocar(s.id, p.id, accion); }
+  else if (accion === "renombrar-sec") dialogoSeccion(s);
+  else if (accion === "nuevo-prod") dialogoProducto(s, null);
+  else if (accion === "editar-prod" && p) dialogoProducto(s, p);
+  else if (accion === "borrar-sec") {
+    const ok = await confirmar(`¿Eliminar la sección «${s.nombre}»?`,
+      s.productos.length ? `También se borran sus ${plural(s.productos.length, "producto", "productos")} y sus fotos. No se puede deshacer.` : "La sección está vacía.", "Eliminar sección");
+    if (!ok) return;
+    catalogo.secciones = catalogo.secciones.filter((x) => x !== s);
+    cambio();
+  } else if (accion === "borrar-prod" && p) {
+    const ok = await confirmar(`¿Eliminar «${p.nombre}»?`, "Si solo no lo tenés por ahora, mejor marcalo como agotado: así no se pierde ni su foto.", "Eliminar producto");
+    if (!ok) return;
+    s.productos = s.productos.filter((x) => x !== p);
+    cambio();
+  }
+});
+$("#lista").addEventListener("change", (e) => {
+  if (e.target.dataset.accion !== "disponible") return;
+  const s = catalogo.secciones.find((x) => x.id === e.target.closest(".seccion")?.dataset.sec);
+  const p = s && s.productos.find((x) => x.id === e.target.closest(".fila")?.dataset.pid);
+  if (!p) return;
+  p.disponible = e.target.checked;
+  cambio();
+  enfocar(s.id, p.id, "disponible");
+});
+$("#buscar").addEventListener("input", pintar);
+$("#nueva-seccion").addEventListener("click", () => dialogoSeccion(null));
+$("#borrar-ejemplos").addEventListener("click", async () => {
+  const n = catalogo.secciones.reduce((a, s) => a + s.productos.filter((p) => p.ejemplo).length, 0);
+  const ok = await confirmar("¿Borrar los productos de ejemplo?", `Se borran ${plural(n, "producto", "productos")} con la etiqueta «Ejemplo». Las secciones quedan.`, "Borrar ejemplos");
+  if (!ok) return;
+  catalogo.secciones.forEach((s) => { s.productos = s.productos.filter((p) => !p.ejemplo); });
+  cambio();
+});
+
+/* ---------- Ventanas ---------- */
+let alCerrarModal = null, modalBloqueado = false, focoAntes = null;
+function abrirModal(html, { ancho = false, medio = false, alCerrar = null } = {}) {
+  if ($("#fondo-modal").hidden) focoAntes = document.activeElement;
+  const m = $("#modal");
+  m.className = "modal" + (ancho ? " ancho" : medio ? " medio" : "");
+  m.innerHTML = html;
+  $("#fondo-modal").hidden = false;
+  document.body.style.overflow = "hidden";
+  alCerrarModal = alCerrar;
+  setTimeout(() => (m.querySelector("[data-foco]") || m.querySelector("input:not([type=file]):not([type=radio]):not([type=checkbox]), select, textarea, button"))?.focus(), 30);
+  return m;
+}
+function cerrarModal() {
+  if (modalBloqueado) return;
+  forzarCierreModal();
+}
+function forzarCierreModal() {
+  modalBloqueado = false;
+  if ($("#fondo-modal").hidden) return;
+  $("#fondo-modal").hidden = true;
+  $("#modal").innerHTML = "";
+  document.body.style.overflow = "";
+  const f = alCerrarModal;
+  alCerrarModal = null;
+  if (f) f();
+  if (focoAntes && document.contains(focoAntes)) focoAntes.focus();
+}
+$("#fondo-modal").addEventListener("click", (e) => { if (e.target.closest("[data-cerrar]")) cerrarModal(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#fondo-modal").hidden) cerrarModal(); });
+
+function confirmar(titulo, texto, boton) {
+  return new Promise((resolver) => {
+    let listo = false;
+    const m = abrirModal(`<h2 id="modal-titulo">${esc(titulo)}</h2><p>${esc(texto)}</p>
+      <div class="modal-pie"><button class="btn" type="button" data-cerrar data-foco>Cancelar</button><button class="btn btn-peligro" type="button" id="si">${esc(boton)}</button></div>`,
+      { alCerrar: () => { if (!listo) resolver(false); } });
+    $("#si", m).addEventListener("click", () => { listo = true; alCerrarModal = null; cerrarModal(); resolver(true); });
+  });
+}
+function mensaje(titulo, texto) {
+  abrirModal(`<h2 id="modal-titulo">${esc(titulo)}</h2><p>${esc(texto)}</p><div class="modal-pie"><button class="btn btn-principal" type="button" data-cerrar>Entendido</button></div>`);
+}
+
+/* ---------- Horario y WhatsApp ---------- */
+const ORDEN_DIAS = [1, 2, 3, 4, 5, 6, 0];
+const DIA_NOMBRE = { 1: "Lunes", 2: "Martes", 3: "Miércoles", 4: "Jueves", 5: "Viernes", 6: "Sábado", 0: "Domingo" };
+const DIA_PLURAL = { 1: "lunes", 2: "martes", 3: "miércoles", 4: "jueves", 5: "viernes", 6: "sábados", 0: "domingos" };
+function etiquetaDias(dias) {
+  const pos = dias.map((d) => ORDEN_DIAS.indexOf(d)).sort((a, b) => a - b);
+  const seguidos = pos.every((p, i) => i === 0 || p === pos[i - 1] + 1);
+  let t;
+  if (pos.length >= 3 && seguidos) t = `${DIA_NOMBRE[ORDEN_DIAS[pos[0]]]} a ${DIA_NOMBRE[ORDEN_DIAS[pos[pos.length - 1]]].toLowerCase()}`;
+  else {
+    const n = pos.map((p) => DIA_PLURAL[ORDEN_DIAS[p]]);
+    t = n.length === 1 ? n[0] : `${n.slice(0, -1).join(", ")} y ${n[n.length - 1]}`;
+  }
+  return t[0].toUpperCase() + t.slice(1);
+}
+function agruparHorario(porDia) {
+  const grupos = [];
+  ORDEN_DIAS.forEach((d) => {
+    const turnos = porDia[d];
+    if (!turnos || !turnos.length) return;
+    const k = JSON.stringify(turnos);
+    let g = grupos.find((x) => x.k === k);
+    if (!g) { g = { k, dias: [], turnos }; grupos.push(g); }
+    g.dias.push(d);
+  });
+  return grupos.map((g) => ({ etiqueta: etiquetaDias(g.dias), dias: g.dias, turnos: g.turnos }));
+}
+const formatoTel = (n) => { const d = String(n || "").replace(/\D/g, ""); const m = /^595(\d{3})(\d{3})(\d{3})$/.exec(d); return m ? `+595 ${m[1]} ${m[2]} ${m[3]}` : d ? "+" + d : ""; };
+function normalizarTel(t) {
+  let d = String(t || "").replace(/\D/g, "");
+  if (d.startsWith("0")) d = "595" + d.slice(1);
+  else if (/^9\d{8}$/.test(d)) d = "595" + d;
+  return d;
+}
+document.addEventListener("click", (e) => { if (e.target.id === "editar-tienda") dialogoTienda(); });
+
+function dialogoTienda() {
+  const t = catalogo.tienda;
+  const porDia = {};
+  t.horario.forEach((h) => h.dias.forEach((d) => { porDia[d] = h.turnos; }));
+  const lista = [];
+  for (let h = 5; h < 24; h++) for (let q = 0; q < 60; q += 15) lista.push(`${String(h).padStart(2, "0")}:${String(q).padStart(2, "0")}`);
+  const horas = (valor) => `<option value="">--:--</option>` + [...new Set([...lista, valor].filter(Boolean))].sort().map((x) => `<option value="${x}" ${x === valor ? "selected" : ""}>${x}</option>`).join("");
+  const filaDia = (d) => {
+    const tr = porDia[d] || [];
+    const v = (i, j) => (tr[i] && tr[i][j]) || "";
+    const n = DIA_NOMBRE[d];
+    return `<div class="dia${tr.length ? "" : " cerrado"}" data-dia="${d}">
+      <strong>${n}</strong>
+      <label class="interruptor"><input type="checkbox" class="abierto" ${tr.length ? "checked" : ""}><span>${tr.length ? "Abierto" : "Cerrado"}</span></label>
+      <div class="turno"><select class="t1a" aria-label="${n}, primer turno, desde">${horas(v(0, 0))}</select><span>a</span><select class="t1c" aria-label="${n}, primer turno, hasta">${horas(v(0, 1))}</select></div>
+      <div class="turno"><select class="t2a" aria-label="${n}, segundo turno, desde">${horas(v(1, 0))}</select><span>a</span><select class="t2c" aria-label="${n}, segundo turno, hasta">${horas(v(1, 1))}</select></div>
+    </div>`;
+  };
+  const m = abrirModal(`<form id="f-tienda" novalidate>
+    <h2 id="modal-titulo">Horario y WhatsApp</h2>
+    <fieldset>
+      <legend>Horario de atención</legend>
+      <div class="dia cabeza" aria-hidden="true"><span>Día</span><span></span><span>Primer turno</span><span>Segundo turno (si cierran al mediodía)</span></div>
+      <div class="dias">${ORDEN_DIAS.map(filaDia).join("")}</div>
+      <p class="ayuda">Si atienden de corrido, dejá vacío el segundo turno. Los días cerrados no se muestran.</p>
+      <div><button type="button" class="link" id="copiar-lunes">Copiar el horario del lunes a martes, miércoles, jueves y viernes</button></div>
+    </fieldset>
+    <div class="campo"><label for="t-wa">WhatsApp de pedidos</label><input id="t-wa" inputmode="tel" value="${esc(formatoTel(t.whatsapp))}" placeholder="0972 879 400" autocomplete="off">
+      <p class="ayuda">A este número llegan los pedidos del carrito y las consultas.</p></div>
+    <div class="vista-horario"><b>Así se va a ver en la página</b><p id="vista-horario"></p></div>
+    <p class="error" id="t-error" role="alert"></p>
+    <div class="modal-pie"><button class="btn" type="button" data-cerrar>Cancelar</button><button class="btn btn-principal" type="submit">Guardar</button></div>
+  </form>`, { medio: true });
+
+  const leer = () => {
+    const resultado = {};
+    let error = "";
+    $$(".dias .dia", m).forEach((fila) => {
+      const d = Number(fila.dataset.dia), n = DIA_NOMBRE[d];
+      if (!$(".abierto", fila).checked) return;
+      const val = (c) => $(c, fila).value;
+      const t1 = [val(".t1a"), val(".t1c")], t2 = [val(".t2a"), val(".t2c")];
+      if (!t1[0] || !t1[1]) { error = error || `${n}: completá las horas del primer turno o marcalo como cerrado.`; return; }
+      if (t1[0] >= t1[1]) { error = error || `${n}: la hora de cierre del primer turno tiene que ser después de la de apertura.`; return; }
+      const turnos = [t1];
+      if (t2[0] || t2[1]) {
+        if (!t2[0] || !t2[1]) { error = error || `${n}: completá las dos horas del segundo turno o dejalo vacío.`; return; }
+        if (t2[0] >= t2[1]) { error = error || `${n}: la hora de cierre del segundo turno tiene que ser después de la de apertura.`; return; }
+        if (t2[0] < t1[1]) { error = error || `${n}: el segundo turno tiene que empezar después de que termine el primero.`; return; }
+        turnos.push(t2);
+      }
+      resultado[d] = turnos;
+    });
+    return { porDia: resultado, error };
+  };
+  const actualizar = () => {
+    const h = agruparHorario(leer().porDia);
+    $("#vista-horario", m).textContent = h.length ? h.map((g) => `${g.etiqueta}: ${g.turnos.map(([a, c]) => `${a} a ${c}`).join(" y ")}`).join(" · ") : "Sin horario: la página no va a mostrar el horario.";
+  };
+  const form = $("#f-tienda", m);
+  form.addEventListener("input", actualizar);
+  form.addEventListener("change", (e) => {
+    if (e.target.classList.contains("abierto")) {
+      const fila = e.target.closest(".dia");
+      fila.classList.toggle("cerrado", !e.target.checked);
+      fila.querySelector(".interruptor span").textContent = e.target.checked ? "Abierto" : "Cerrado";
+      if (e.target.checked && !$(".t1a", fila).value) {
+        const lunes = $('.dia[data-dia="1"]', m);
+        ["t1a", "t1c", "t2a", "t2c"].forEach((c) => { $("." + c, fila).value = $("." + c, lunes).value; });
+      }
+    }
+    actualizar();
+  });
+  $("#copiar-lunes", m).addEventListener("click", () => {
+    const lunes = $('.dia[data-dia="1"]', m);
+    [2, 3, 4, 5].forEach((d) => {
+      const fila = $(`.dia[data-dia="${d}"]`, m);
+      const ab = $(".abierto", lunes).checked;
+      $(".abierto", fila).checked = ab;
+      fila.classList.toggle("cerrado", !ab);
+      fila.querySelector(".interruptor span").textContent = ab ? "Abierto" : "Cerrado";
+      ["t1a", "t1c", "t2a", "t2c"].forEach((c) => { $("." + c, fila).value = $("." + c, lunes).value; });
+    });
+    actualizar();
+  });
+  actualizar();
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const err = $("#t-error", m);
+    err.textContent = "";
+    const { porDia, error } = leer();
+    if (error) { err.textContent = error; return; }
+    const tel = normalizarTel($("#t-wa", m).value);
+    if (!tel) { err.textContent = "Escribí el número de WhatsApp."; $("#t-wa", m).focus(); return; }
+    if (tel.length < 11) { err.textContent = "El número de WhatsApp parece incompleto."; $("#t-wa", m).focus(); return; }
+    catalogo.tienda = { ...catalogo.tienda, horario: agruparHorario(porDia), whatsapp: tel };
+    cerrarModal();
+    cambio();
+  });
+}
+
+/* ---------- Secciones ---------- */
+function dialogoSeccion(s) {
+  const m = abrirModal(`<form id="f-sec" novalidate>
+    <h2 id="modal-titulo">${s ? "Cambiar el nombre de la sección" : "Nueva sección"}</h2>
+    <div class="campo"><label for="s-nombre">Nombre</label><input id="s-nombre" value="${esc(s ? s.nombre : "")}" placeholder="Por ejemplo: Recco" autocomplete="off"></div>
+    <p class="ayuda">Puede ser una marca o un tipo de prenda. Las secciones vacías no aparecen en la página.</p>
+    <p class="error" id="s-error" role="alert"></p>
+    <div class="modal-pie"><button class="btn" type="button" data-cerrar>Cancelar</button><button class="btn btn-principal" type="submit">${s ? "Guardar nombre" : "Crear sección"}</button></div>
+  </form>`);
+  $("#f-sec", m).addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nombre = $("#s-nombre", m).value.trim().replace(/\s+/g, " ");
+    const err = $("#s-error", m);
+    if (!nombre) { err.textContent = "Escribí un nombre."; return; }
+    if (catalogo.secciones.some((x) => x !== s && sinTildes(x.nombre) === sinTildes(nombre))) { err.textContent = "Ya hay una sección con ese nombre."; return; }
+    let destino = s;
+    if (s) s.nombre = nombre;
+    else { destino = { id: idSeccion(nombre, catalogo), nombre, productos: [] }; catalogo.secciones.push(destino); }
+    cerrarModal();
+    cambio();
+    if (!s) $(`.seccion[data-sec="${CSS.escape(destino.id)}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
+
+/* ---------- Fotos: se achican antes de subir para que la página cargue rápido ---------- */
+async function achicarFoto(blob, maximo = 1000) {
+  let img, url = "";
+  try { img = await createImageBitmap(blob); }
+  catch (e) {
+    url = URL.createObjectURL(blob);
+    img = await new Promise((ok, mal) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => mal(new Error("No se pudo abrir la foto.")); i.src = url; });
+  }
+  const ancho = img.naturalWidth || img.width, alto = img.naturalHeight || img.height;
+  const k = Math.min(1, maximo / Math.max(ancho, alto));
+  const c = document.createElement("canvas");
+  c.width = Math.max(1, Math.round(ancho * k));
+  c.height = Math.max(1, Math.round(alto * k));
+  const ctx = c.getContext("2d");
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  if (img.close) img.close();
+  if (url) URL.revokeObjectURL(url);
+  return new Promise((ok, mal) => c.toBlob((b) => (b ? ok(b) : mal(new Error("No se pudo preparar la foto."))), "image/jpeg", 0.82));
+}
+
+/* ---------- Productos ---------- */
+function dialogoProducto(sec, original) {
+  const p = original ? copia(original) : { id: uid(), nombre: "", descripcion: "", precio: null, minimo: null, talles: [], colores: [], imagen: "", disponible: true };
+  const nombresColor = Object.keys(TIENDA.colores);
+  const elegidos = new Set((p.colores || []).filter((c) => nombresColor.includes(c)));
+  const otros = (p.colores || []).filter((c) => !nombresColor.includes(c));
+  let fotoNueva = "", cerrado = false;
+
+  const m = abrirModal(`<form id="f-prod" novalidate>
+    <h2 id="modal-titulo">${original ? "Editar producto" : "Nuevo producto"}</h2>
+    <div class="foto-campo">
+      <div class="foto-prev" id="foto-prev">${p.imagen ? `<img src="${esc(p.imagen)}" alt="">` : "Sin foto"}</div>
+      <div class="foto-acc">
+        <button class="btn btn-chico" type="button" id="elegir-foto">${p.imagen ? "Cambiar foto" : "Elegir foto"}</button>
+        <input id="f-foto" type="file" accept="image/*" hidden>
+        <button class="link" type="button" id="quitar-foto" ${p.imagen ? "" : "hidden"}>Quitar foto</button>
+        <p class="ayuda" id="foto-estado">Mejor vertical. Se achica sola para que la página cargue rápido.</p>
+      </div>
+    </div>
+    <div class="campo"><label for="f-sec">Sección</label><select id="f-sec">${catalogo.secciones.map((x) => `<option value="${esc(x.id)}" ${x === sec ? "selected" : ""}>${esc(x.nombre)}</option>`).join("")}</select></div>
+    <div class="campo"><label for="f-nombre">Nombre</label><input id="f-nombre" value="${esc(p.nombre)}" autocomplete="off" data-foco></div>
+    <div class="campo"><label for="f-desc">Descripción</label><textarea id="f-desc" rows="3" placeholder="Tela, detalles, para qué sirve">${esc(p.descripcion || "")}</textarea></div>
+    <fieldset>
+      <legend>Precio</legend>
+      <label class="radio"><input type="radio" name="tipo-precio" value="precio" ${p.precio ? "checked" : ""}><span>Mostrar precio</span></label>
+      <div class="precio-campo"><span>Gs.</span><input id="f-precio" inputmode="numeric" autocomplete="off" placeholder="89.000" aria-label="Precio en guaraníes" value="${p.precio ? miles(p.precio) : ""}"><span class="ayuda">por unidad</span></div>
+      <label class="radio"><input type="radio" name="tipo-precio" value="consultar" ${p.precio ? "" : "checked"}><span>Consultar precio por mayor <span class="ayuda">(no se muestra ningún precio)</span></span></label>
+    </fieldset>
+    <div class="dos">
+      <div class="campo"><label for="f-min">Pedido mínimo (unidades)</label><input id="f-min" type="number" min="1" step="1" inputmode="numeric" placeholder="Sin mínimo" value="${p.minimo || ""}"></div>
+      <div class="campo"><label for="f-talles">Talles</label><input id="f-talles" value="${esc((p.talles || []).join(", "))}" placeholder="P, M, G, GG" autocomplete="off"></div>
+    </div>
+    <fieldset>
+      <legend>Colores</legend>
+      <div class="chips-col">${nombresColor.map((c) => `<button type="button" class="chip-col" data-color="${esc(c)}" aria-pressed="${elegidos.has(c)}"><span style="background:${TIENDA.colores[c]}"></span>${esc(c)}</button>`).join("")}</div>
+      <div class="campo"><label for="f-otros">Otros colores</label><input id="f-otros" value="${esc(otros.join(", "))}" placeholder="Separados por coma" autocomplete="off"></div>
+    </fieldset>
+    <label class="interruptor"><input type="checkbox" id="f-disp" ${p.disponible !== false ? "checked" : ""}><span>Disponible</span></label>
+    <p class="ayuda">Si lo desmarcás queda como agotado: no aparece en la página, pero no se pierde.</p>
+    <p class="error" id="f-error" role="alert"></p>
+    <div class="modal-pie"><button class="btn" type="button" data-cerrar>Cancelar</button><button class="btn btn-principal" type="submit" id="guardar-prod">Guardar producto</button></div>
+  </form>`, { alCerrar: () => { cerrado = true; if (fotoNueva) API.borrarFoto(fotoNueva); } });
+
+  const estadoFoto = $("#foto-estado", m);
+  $("#elegir-foto", m).addEventListener("click", () => $("#f-foto", m).click());
+  $("#f-foto", m).addEventListener("change", async (e) => {
+    const archivo = e.target.files[0];
+    e.target.value = "";
+    if (!archivo) return;
+    estadoFoto.textContent = "Subiendo foto…";
+    $("#guardar-prod", m).disabled = true;
+    try {
+      const url = await API.subirFoto(await achicarFoto(archivo));
+      if (cerrado) { API.borrarFoto(url); return; }
+      if (fotoNueva) API.borrarFoto(fotoNueva);
+      fotoNueva = url;
+      p.imagen = url;
+      $("#foto-prev", m).innerHTML = `<img src="${esc(url)}" alt="">`;
+      $("#quitar-foto", m).hidden = false;
+      $("#elegir-foto", m).textContent = "Cambiar foto";
+      estadoFoto.textContent = "Foto lista.";
+    } catch (x) {
+      if (x.message !== "sesion") estadoFoto.textContent = x.message || "No se pudo subir la foto.";
+    }
+    if (!cerrado) $("#guardar-prod", m).disabled = false;
+  });
+  $("#quitar-foto", m).addEventListener("click", () => {
+    if (fotoNueva) { API.borrarFoto(fotoNueva); fotoNueva = ""; }
+    p.imagen = "";
+    $("#foto-prev", m).textContent = "Sin foto";
+    $("#quitar-foto", m).hidden = true;
+    $("#elegir-foto", m).textContent = "Elegir foto";
+    estadoFoto.textContent = "Se guarda sin foto.";
+  });
+  $(".chips-col", m).addEventListener("click", (e) => {
+    const b = e.target.closest(".chip-col");
+    if (b) b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed") !== "true"));
+  });
+  const precio = $("#f-precio", m);
+  precio.addEventListener("input", () => { m.querySelector('input[name="tipo-precio"][value="precio"]').checked = true; });
+  precio.addEventListener("blur", () => { const n = leerGuaranies(precio.value); precio.value = n ? miles(n) : ""; });
+
+  $("#f-prod", m).addEventListener("submit", (e) => {
+    e.preventDefault();
+    const err = $("#f-error", m);
+    err.textContent = "";
+    const nombre = $("#f-nombre", m).value.trim().replace(/\s+/g, " ");
+    if (!nombre) { err.textContent = "Escribí el nombre del producto."; $("#f-nombre", m).focus(); return; }
+    const conPrecio = m.querySelector('input[name="tipo-precio"]:checked').value === "precio";
+    const valor = conPrecio ? leerGuaranies(precio.value) : null;
+    if (conPrecio && !valor) { err.textContent = "Escribí el precio o elegí «Consultar precio por mayor»."; precio.focus(); return; }
+    const minimo = parseInt($("#f-min", m).value, 10);
+    Object.assign(p, {
+      nombre,
+      descripcion: $("#f-desc", m).value.trim(),
+      precio: valor,
+      minimo: minimo > 1 ? minimo : null,
+      talles: separar($("#f-talles", m).value),
+      colores: [...$$('.chip-col[aria-pressed="true"]', m).map((b) => b.dataset.color), ...separar($("#f-otros", m).value).map((c) => c.toLowerCase())],
+      disponible: $("#f-disp", m).checked,
+      ejemplo: false
+    });
+    const destino = catalogo.secciones.find((x) => x.id === $("#f-sec", m).value) || sec;
+    if (original) {
+      if (destino === sec) sec.productos[sec.productos.indexOf(original)] = p;
+      else { sec.productos = sec.productos.filter((x) => x !== original); destino.productos.push(p); }
+    } else destino.productos.push(p);
+    fotoNueva = "";
+    alCerrarModal = null;
+    cerrarModal();
+    cambio();
+    $(`.fila[data-pid="${CSS.escape(p.id)}"]`)?.scrollIntoView({ block: "nearest" });
+  });
+}
+
+/* ---------- Importar Excel (con fotos pegadas en las filas) ---------- */
+const COLUMNAS = {
+  seccion: ["marca", "seccion", "categoria", "linea"],
+  nombre: ["nombre", "producto", "nombre del producto", "modelo"],
+  descripcion: ["descripcion", "detalle", "detalles"],
+  precio: ["precio", "precio por mayor", "precio mayorista", "precio x mayor", "precio unitario"],
+  minimo: ["minimo", "pedido minimo", "cantidad minima", "minimo (unidades)", "pedido minimo (unidades)"],
+  talles: ["talles", "talle", "tallas", "talla"],
+  colores: ["colores", "color"],
+  foto: ["foto", "fotos", "imagen", "imagenes"],
+  disponible: ["disponible", "estado", "stock"]
+};
+
+async function leerExcel(archivo, progreso) {
+  if (!window.JSZip) throw new Error("No se pudo cargar la herramienta para leer Excel. Revisá tu internet y recargá la página.");
+  let zip;
+  try { zip = await JSZip.loadAsync(archivo); } catch (e) { throw new Error("El archivo no parece un Excel (.xlsx) válido."); }
+  const texto = async (ruta) => { const f = ruta && zip.file(ruta); return f ? f.async("string") : null; };
+  const xml = (t) => new DOMParser().parseFromString(t, "application/xml");
+  const tags = (nodo, nombre) => Array.from(nodo.getElementsByTagNameNS("*", nombre));
+  const hijo = (nodo, nombre) => Array.from(nodo.children).find((c) => c.localName === nombre);
+  const NS_R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+  const atrR = (el, n) => el.getAttributeNS(NS_R, n) || el.getAttribute("r:" + n);
+  const resolver = (dir, destino) => {
+    if (destino.startsWith("/")) return destino.slice(1);
+    const out = [];
+    (dir + destino).split("/").forEach((parte) => { if (parte === "..") out.pop(); else if (parte && parte !== ".") out.push(parte); });
+    return out.join("/");
+  };
+  const relaciones = async (ruta) => {
+    const dir = ruta.slice(0, ruta.lastIndexOf("/") + 1);
+    const t = await texto(dir + "_rels/" + ruta.slice(dir.length) + ".rels");
+    const mapa = {};
+    if (t) tags(xml(t), "Relationship").forEach((r) => {
+      mapa[r.getAttribute("Id")] = { ruta: r.getAttribute("TargetMode") === "External" ? null : resolver(dir, r.getAttribute("Target") || ""), tipo: r.getAttribute("Type") || "" };
+    });
+    return mapa;
+  };
+
+  progreso("Leyendo las filas…", 0.03);
+  const libroTxt = await texto("xl/workbook.xml");
+  if (!libroTxt) throw new Error("El archivo no parece un Excel (.xlsx) válido.");
+  const primeraHoja = tags(xml(libroTxt), "sheet")[0];
+  if (!primeraHoja) throw new Error("El Excel no tiene hojas.");
+  const relLibro = await relaciones("xl/workbook.xml");
+  const rutaHoja = relLibro[atrR(primeraHoja, "id")]?.ruta || "xl/worksheets/sheet1.xml";
+  const hojaTxt = await texto(rutaHoja);
+  if (!hojaTxt) throw new Error("No encontré la primera hoja del Excel.");
+
+  const compartidos = [];
+  const rutaComp = Object.values(relLibro).find((r) => r.tipo.endsWith("/sharedStrings"))?.ruta || "xl/sharedStrings.xml";
+  const compTxt = await texto(rutaComp);
+  if (compTxt) tags(xml(compTxt), "si").forEach((si) => compartidos.push(tags(si, "t").filter((t) => t.parentElement?.localName !== "rPh").map((t) => t.textContent).join("")));
+
+  const filasHoja = new Map();
+  const celdasConFoto = [];
+  const numeroColumna = (letras) => letras.split("").reduce((a, ch) => a * 26 + ch.charCodeAt(0) - 64, 0);
+  tags(xml(hojaTxt), "c").forEach((c) => {
+    const m = /^([A-Z]+)(\d+)$/.exec(c.getAttribute("r") || "");
+    if (!m) return;
+    const col = numeroColumna(m[1]), fila = Number(m[2]);
+    const tipo = c.getAttribute("t");
+    const v = hijo(c, "v")?.textContent ?? "";
+    if (c.getAttribute("vm")) celdasConFoto.push({ fila, col, vm: Number(c.getAttribute("vm")) });
+    let valor;
+    if (tipo === "s") valor = compartidos[Number(v)] ?? "";
+    else if (tipo === "inlineStr") valor = tags(c, "t").map((x) => x.textContent).join("");
+    else if (tipo === "str") valor = v;
+    else if (tipo === "b") valor = v === "1" ? "Sí" : "No";
+    else if (tipo === "e") valor = "";
+    else valor = v === "" ? "" : Number(v);
+    if (!filasHoja.has(fila)) filasHoja.set(fila, new Map());
+    filasHoja.get(fila).set(col, valor);
+  });
+
+  const numeros = [...filasHoja.keys()].sort((a, b) => a - b);
+  let filaTitulos = null, cols = {};
+  for (const n of numeros) {
+    const encontradas = {};
+    filasHoja.get(n).forEach((valor, col) => {
+      const k = sinTildes(String(valor)).replace(/[.:*]/g, "").replace(/\s+/g, " ").trim();
+      for (const [campo, nombres] of Object.entries(COLUMNAS)) if (nombres.includes(k) && !(campo in encontradas)) encontradas[campo] = col;
+    });
+    if ("nombre" in encontradas) { filaTitulos = n; cols = encontradas; break; }
+    if (n > 30) break;
+  }
+  if (!filaTitulos) throw new Error("No encontré la fila de títulos. Tiene que haber una columna «Nombre» (mirá la plantilla de Excel).");
+  if (!("seccion" in cols)) throw new Error("Falta la columna «Marca» (o «Sección»), que dice en qué sección va cada producto.");
+
+  progreso("Buscando las fotos…", 0.08);
+  const fotosFila = new Map();
+  const anotarFoto = (fila, col, ruta) => { if (!ruta) return; if (!fotosFila.has(fila)) fotosFila.set(fila, []); fotosFila.get(fila).push({ col, ruta }); };
+
+  // Fotos pegadas encima de las celdas (flotantes): cuenta la fila donde está la esquina de arriba
+  const relHoja = await relaciones(rutaHoja);
+  for (const rel of Object.values(relHoja)) {
+    if (!rel.ruta || !rel.tipo.endsWith("/drawing")) continue;
+    const dibTxt = await texto(rel.ruta);
+    if (!dibTxt) continue;
+    const dib = xml(dibTxt);
+    const relDib = await relaciones(rel.ruta);
+    [...tags(dib, "twoCellAnchor"), ...tags(dib, "oneCellAnchor")].forEach((ancla) => {
+      const desde = hijo(ancla, "from");
+      const blip = tags(ancla, "blip")[0];
+      if (!desde || !blip) return;
+      anotarFoto(Number(hijo(desde, "row")?.textContent) + 1, Number(hijo(desde, "col")?.textContent) + 1, relDib[atrR(blip, "embed")]?.ruta);
+    });
+  }
+
+  // Fotos colocadas dentro de la celda (Excel: "Colocar en celda")
+  if (celdasConFoto.length) {
+    try {
+      const [metaTxt, valoresTxt, listaTxt, estructTxt] = await Promise.all(["xl/metadata.xml", "xl/richData/rdrichvalue.xml", "xl/richData/richValueRel.xml", "xl/richData/rdrichvaluestructure.xml"].map(texto));
+      if (metaTxt && valoresTxt && listaTxt) {
+        const meta = xml(metaTxt);
+        const futuro = tags(meta, "futureMetadata").find((f) => f.getAttribute("name") === "XLRICHVALUE");
+        const indicesRv = futuro ? Array.from(futuro.children).filter((x) => x.localName === "bk").map((bk) => Number(tags(bk, "rvb")[0]?.getAttribute("i"))) : [];
+        const valMeta = tags(meta, "valueMetadata")[0];
+        const bloques = valMeta ? Array.from(valMeta.children).filter((x) => x.localName === "bk") : [];
+        const estructuras = estructTxt ? tags(xml(estructTxt), "s").map((s) => tags(s, "k").map((k) => k.getAttribute("n"))) : [];
+        const valores = tags(xml(valoresTxt), "rv");
+        const lista = tags(xml(listaTxt), "rel").map((r) => atrR(r, "id"));
+        const relRica = await relaciones("xl/richData/richValueRel.xml");
+        celdasConFoto.forEach(({ fila, col, vm }) => {
+          const rc = bloques[vm - 1] ? tags(bloques[vm - 1], "rc")[0] : null;
+          const iFuturo = rc ? Number(rc.getAttribute("v")) : vm - 1;
+          const iValor = Number.isFinite(indicesRv[iFuturo]) ? indicesRv[iFuturo] : iFuturo;
+          const rv = valores[iValor];
+          if (!rv) return;
+          const claves = estructuras[Number(rv.getAttribute("s"))] || [];
+          const pos = Math.max(0, claves.indexOf("_rvRel:LocalImageIdentifier"));
+          const iRel = Number(tags(rv, "v")[pos]?.textContent);
+          anotarFoto(fila, col, relRica[lista[iRel]]?.ruta);
+        });
+      }
+    } catch (e) { /* si no se entienden, esas filas quedan sin foto */ }
+  }
+
+  const TIPOS = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", webp: "image/webp", bmp: "image/bmp" };
+  const datos = numeros.filter((n) => n > filaTitulos);
+  const filas = [];
+  let hechas = 0;
+  for (const n of datos) {
+    hechas++;
+    const celdas = filasHoja.get(n);
+    const valor = (campo) => (campo in cols ? celdas.get(cols[campo]) ?? "" : "");
+    const txt = (campo) => String(valor(campo)).trim();
+    const fotos = fotosFila.get(n) || [];
+    if (![...celdas.values()].some((v) => String(v).trim() !== "") && !fotos.length) continue;
+    const f = {
+      numero: n,
+      seccion: txt("seccion").replace(/\s+/g, " "),
+      nombre: txt("nombre").replace(/\s+/g, " "),
+      descripcion: txt("descripcion"),
+      precio: null,
+      minimo: null,
+      talles: separar(txt("talles")),
+      colores: separar(txt("colores")).map((c) => c.toLowerCase()),
+      disponible: !/^(no|agotado|agotada|sin stock|0|falso|false)$/i.test(txt("disponible")),
+      foto: null, fotoUrl: "", vista: "", errores: [], avisos: []
+    };
+    if (!f.nombre) f.errores.push("Falta el nombre.");
+    if (!f.seccion) f.errores.push("Falta la marca o sección.");
+    const pr = valor("precio");
+    if (typeof pr === "number") { if (pr > 0) f.precio = Math.round(pr); }
+    else if (pr && !/consult/i.test(pr)) {
+      if (/^\s*(gs\.?|₲)?\s*[\d.,\s]+$/i.test(pr) && leerGuaranies(pr)) f.precio = leerGuaranies(pr);
+      else f.errores.push(`El precio «${pr}» no es un número.`);
+    }
+    const mi = valor("minimo");
+    if (String(mi).trim() !== "") {
+      const k = typeof mi === "number" ? Math.round(mi) : parseInt(String(mi).replace(/\D/g, ""), 10);
+      if (k > 1) f.minimo = k;
+      else if (k !== 1) f.avisos.push("El mínimo no es un número: se deja sin mínimo.");
+    }
+    if (!f.errores.length) {
+      const elegida = fotos.find((x) => x.col === cols.foto) || fotos[0];
+      if (elegida) {
+        progreso(`Preparando fotos (fila ${n})…`, 0.1 + 0.88 * hechas / datos.length);
+        try {
+          const tipo = TIPOS[elegida.ruta.split(".").pop().toLowerCase()];
+          const archivoFoto = zip.file(elegida.ruta);
+          if (!tipo || !archivoFoto) throw new Error("formato");
+          f.foto = await achicarFoto(new Blob([await archivoFoto.async("arraybuffer")], { type: tipo }));
+          f.vista = URL.createObjectURL(f.foto);
+        } catch (e) { f.avisos.push("La foto no se pudo leer (formato no compatible): se carga sin foto."); }
+      } else {
+        const ft = txt("foto");
+        const k = ft.indexOf("/api/foto/");
+        if (k >= 0) f.fotoUrl = ft.slice(k);
+        else if (/^https?:\/\//i.test(ft)) f.fotoUrl = ft;
+        else if (ft) f.avisos.push("En la columna Foto hay texto pero no una foto: se carga sin foto.");
+        f.vista = f.fotoUrl;
+      }
+    }
+    filas.push(f);
+  }
+  progreso("Listo.", 1);
+  return filas;
+}
+
+function liberarVistas(filas) { filas.forEach((f) => { if (f.vista && f.vista.startsWith("blob:")) URL.revokeObjectURL(f.vista); }); }
+
+$("#importar").addEventListener("click", () => $("#archivo-excel").click());
+$("#archivo-excel").addEventListener("change", async (e) => {
+  const archivo = e.target.files[0];
+  e.target.value = "";
+  if (!archivo) return;
+  if (!/\.xlsx$/i.test(archivo.name)) {
+    mensaje("Ese archivo no es un Excel .xlsx", "Abrilo en Excel y guardalo como «Libro de Excel (.xlsx)». Después volvé a importarlo.");
+    return;
+  }
+  const m = abrirModal(`<h2 id="modal-titulo">Leyendo el Excel…</h2><p class="ayuda" id="imp-estado">Abriendo el archivo.</p><div class="barra-prog"><div id="imp-barra"></div></div>`);
+  modalBloqueado = true;
+  let filas;
+  try {
+    filas = await leerExcel(archivo, (t, avance) => { $("#imp-estado", m).textContent = t; $("#imp-barra", m).style.width = Math.round(avance * 100) + "%"; });
+  } catch (x) {
+    modalBloqueado = false;
+    mensaje("No se pudo leer el Excel", x.message);
+    return;
+  }
+  modalBloqueado = false;
+  vistaPrevia(filas);
+});
+
+function vistaPrevia(filas) {
+  if (!filas.length) { mensaje("No encontré productos en el Excel", "Revisá que los productos estén debajo de la fila de títulos, en la primera hoja."); return; }
+  const buenas = filas.filter((f) => !f.errores.length);
+  const malas = filas.length - buenas.length;
+  const conFoto = buenas.filter((f) => f.foto || f.fotoUrl).length;
+  const actuales = catalogo.secciones.reduce((a, s) => a + s.productos.length, 0);
+  const m = abrirModal(`<h2 id="modal-titulo">Revisá antes de importar</h2>
+    <p><b>${plural(buenas.length, "producto listo", "productos listos")}</b> · ${conFoto} con foto${malas ? ` · <b class="est-mal">${plural(malas, "fila con errores", "filas con errores")}</b> (no se importan)` : ""}</p>
+    <div class="tabla-imp"><table>
+      <thead><tr><th>Fila</th><th>Foto</th><th>Sección</th><th>Nombre</th><th>Precio</th><th>Estado</th></tr></thead>
+      <tbody>${filas.map((f) => `<tr class="${f.errores.length ? "mal" : ""}">
+        <td>${f.numero}</td>
+        <td><div class="mini">${f.vista ? `<img src="${esc(f.vista)}" alt="">` : "Sin foto"}</div></td>
+        <td>${esc(f.seccion)}</td><td>${esc(f.nombre)}</td>
+        <td>${f.precio ? guaranies(f.precio) : "Consultar"}</td>
+        <td>${f.errores.length ? `<span class="est-mal">${esc(f.errores.join(" "))}</span>` : f.avisos.length ? `<span class="est-aviso">${esc(f.avisos.join(" "))}</span>` : '<span class="est-ok">Listo</span>'}</td>
+      </tr>`).join("")}</tbody>
+    </table></div>
+    <fieldset>
+      <legend>¿Cómo los cargo?</legend>
+      <label class="radio"><input type="radio" name="modo" value="agregar" checked><span>Agregar y actualizar: los nuevos se suman y los que ya están (mismo nombre en la misma sección) se actualizan.</span></label>
+      <label class="radio"><input type="radio" name="modo" value="reemplazar"><span>Reemplazar todo el catálogo por el del Excel.</span></label>
+      <p class="error" id="aviso-reemplazo" hidden>Se borran los ${plural(actuales, "producto", "productos")} que hay ahora y sus fotos. Si querés una copia, primero cancelá y tocá «Descargar Excel».</p>
+    </fieldset>
+    <div class="modal-pie"><button class="btn" type="button" data-cerrar>Cancelar</button><button class="btn btn-principal" type="button" id="confirmar-imp" ${buenas.length ? "" : "disabled"}>Importar ${plural(buenas.length, "producto", "productos")}</button></div>`,
+    { ancho: true, alCerrar: () => liberarVistas(filas) });
+  $("fieldset", m).addEventListener("change", (e) => { if (e.target.name === "modo") $("#aviso-reemplazo", m).hidden = e.target.value !== "reemplazar"; });
+  $("#confirmar-imp", m).addEventListener("click", () => importar(buenas, m.querySelector('input[name="modo"]:checked').value, filas));
+}
+
+async function importar(buenas, modo, todas) {
+  const m = abrirModal(`<h2 id="modal-titulo">Importando…</h2><p class="ayuda" id="imp-estado">Preparando.</p><div class="barra-prog"><div id="imp-barra"></div></div>`, { alCerrar: () => liberarVistas(todas) });
+  modalBloqueado = true;
+  const conFoto = buenas.filter((f) => f.foto);
+  const fallidas = [];
+  let hechas = 0;
+  const cola = [...conFoto];
+  const subir = async () => {
+    while (cola.length) {
+      const f = cola.shift();
+      try { f.imagen = await API.subirFoto(f.foto); }
+      catch (x) { if (x.message === "sesion") throw x; fallidas.push(f.numero); }
+      hechas++;
+      $("#imp-estado", m).textContent = `Subiendo fotos: ${hechas} de ${conFoto.length}`;
+      $("#imp-barra", m).style.width = Math.round(hechas / conFoto.length * 100) + "%";
+    }
+  };
+  try { await Promise.all(Array.from({ length: Math.min(3, cola.length) }, subir)); }
+  catch (x) { modalBloqueado = false; return; }
+  buenas.forEach((f) => { if (!f.imagen && f.fotoUrl) f.imagen = f.fotoUrl; });
+  const { nuevos, actualizados } = aplicarImportacion(buenas, modo);
+  modalBloqueado = false;
+  abrirModal(`<h2 id="modal-titulo">Listo</h2>
+    <p>${nuevos === 1 ? "Se agregó 1 producto" : `Se agregaron ${nuevos} productos`}${actualizados ? ` y ${actualizados === 1 ? "se actualizó 1" : `se actualizaron ${actualizados}`}` : ""}.</p>
+    ${fallidas.length ? `<p class="error">No se pudieron subir ${plural(fallidas.length, "foto", "fotos")} (${fallidas.length === 1 ? "fila" : "filas"} ${fallidas.join(", ")}). Esos productos quedaron sin foto: se la podés poner con «Editar».</p>` : ""}
+    <div class="modal-pie"><button class="btn btn-principal" type="button" data-cerrar>Ver el catálogo</button></div>`, { alCerrar: () => liberarVistas(todas) });
+}
+
+function aplicarImportacion(filas, modo) {
+  const base = modo === "reemplazar" ? { ...catalogo, secciones: [] } : catalogo;
+  let nuevos = 0, actualizados = 0;
+  filas.forEach((f) => {
+    let sec = base.secciones.find((s) => sinTildes(s.nombre) === sinTildes(f.seccion));
+    if (!sec) { sec = { id: idSeccion(f.seccion, base), nombre: f.seccion, productos: [] }; base.secciones.push(sec); }
+    const datos = { nombre: f.nombre, descripcion: f.descripcion, precio: f.precio, minimo: f.minimo, talles: f.talles, colores: f.colores, disponible: f.disponible, ejemplo: false };
+    const existente = sec.productos.find((p) => sinTildes(p.nombre) === sinTildes(f.nombre));
+    if (existente) {
+      Object.assign(existente, datos);
+      if (f.imagen) existente.imagen = f.imagen;
+      actualizados++;
+    } else {
+      sec.productos.push({ id: uid(), ...datos, imagen: f.imagen || "" });
+      nuevos++;
+    }
+  });
+  catalogo = base;
+  cambio();
+  return { nuevos, actualizados };
+}
+
+/* ---------- Descargar el catálogo en Excel ---------- */
+async function crearExcel(filas, anchos) {
+  const zip = new JSZip();
+  const x = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "");
+  const letra = (i) => { let s = ""; i++; while (i) { const r = (i - 1) % 26; s = String.fromCharCode(65 + r) + s; i = Math.floor((i - 1) / 26); } return s; };
+  const NS = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';
+  const filasXml = filas.map((f, r) => `<row r="${r + 1}">${f.map((v, c) => {
+    const ref = letra(c) + (r + 1), estilo = r === 0 ? ' s="1"' : "";
+    if (typeof v === "number") return `<c r="${ref}"${estilo}><v>${v}</v></c>`;
+    if (v === "" || v == null) return "";
+    return `<c r="${ref}" t="inlineStr"${estilo}><is><t xml:space="preserve">${x(v)}</t></is></c>`;
+  }).join("")}</row>`).join("");
+  zip.file("[Content_Types].xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`);
+  zip.file("_rels/.rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`);
+  zip.file("xl/workbook.xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook ${NS} xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Productos" sheetId="1" r:id="rId1"/></sheets></workbook>`);
+  zip.file("xl/_rels/workbook.xml.rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`);
+  zip.file("xl/styles.xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet ${NS}><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FF540111"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF3D0B1"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`);
+  zip.file("xl/worksheets/sheet1.xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet ${NS}><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${anchos.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join("")}</cols><sheetData>${filasXml}</sheetData></worksheet>`);
+  return zip.generateAsync({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+}
+$("#exportar").addEventListener("click", async () => {
+  if (!window.JSZip) { mensaje("No se pudo armar el Excel", "Revisá tu internet y recargá la página."); return; }
+  const filas = [["Marca", "Nombre", "Descripción", "Precio", "Mínimo", "Talles", "Colores", "Foto", "Disponible"]];
+  catalogo.secciones.forEach((s) => s.productos.forEach((p) => filas.push([
+    s.nombre, p.nombre, p.descripcion || "", p.precio || "", p.minimo || "", (p.talles || []).join(", "), (p.colores || []).join(", "),
+    p.imagen ? (p.imagen.startsWith("/") ? location.origin + p.imagen : p.imagen) : "", p.disponible === false ? "No" : "Sí"
+  ])));
+  const blob = await crearExcel(filas, [16, 32, 46, 12, 9, 18, 24, 44, 11]);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `catalogo-cindy-${new Date().toISOString().slice(0, 10)}.xlsx`;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+});
+
+/* ---------- Inicio ---------- */
+(async function iniciar() {
+  API.demo = !(await hayServidor());
+  $("#ingreso-demo").hidden = !API.demo;
+  $("#ingreso").hidden = false;
+  let guardada = "";
+  try { guardada = sessionStorage.getItem("cindy-clave") || ""; } catch (e) { /* nada */ }
+  if (guardada && !API.demo) { $("#clave").value = guardada; $("#f-ingreso").requestSubmit(); }
+  else $("#clave").focus();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Configuración para Netlify: no hace falta tocar nada en la página de Netlify.
+[build]
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# El panel no aparece en Google
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"

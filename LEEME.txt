@@ -1,0 +1,40 @@
+CINDY MAYORISTA · PÁGINA + PANEL DE ADMINISTRACIÓN
+====================================================
+
+QUÉ HAY EN ESTA CARPETA
+- public/index.html ............ la página que ven los clientes
+- public/admin/index.html ...... el panel (se entra con contraseña)
+- public/tienda.js ............. nombre, colores y valores iniciales (horario y WhatsApp se editan desde el panel)
+- public/plantilla-productos.xlsx  plantilla para cargar productos desde Excel
+- netlify/ ..................... la parte del servidor que guarda productos y fotos
+- netlify.toml y package.json .. configuración para Netlify (no hace falta tocarlos)
+
+CÓMO PUBLICARLA (una sola vez)
+1. Descomprimí el zip.
+2. En GitHub creá un repositorio nuevo (por ejemplo: cindy-mayorista).
+   Con «uploading an existing file», arrastrá TODO lo que está dentro de la carpeta
+   cindy-mayorista: las carpetas public y netlify, y los archivos netlify.toml,
+   package.json y LEEME.txt. Confirmá con «Commit changes».
+3. En Netlify: «Add new site» → «Import an existing project» → GitHub → elegí el repositorio.
+   No cambies nada de la configuración (Netlify la lee de netlify.toml) y publicá.
+4. Contraseña del panel: en Netlify, entrá a la configuración del sitio →
+   «Environment variables» → agregá una variable:
+       Key:   ADMIN_PASSWORD
+       Value: la contraseña que elijan (que sea larga y difícil de adivinar)
+   Después volvé a publicar el sitio («Deploys» → «Trigger deploy») para que la tome.
+5. Listo:
+   - Página de clientes:  https://TU-SITIO.netlify.app/
+   - Panel:               https://TU-SITIO.netlify.app/admin/
+
+CÓMO SE USA EL PANEL
+- Mientras no guarden nada, la página muestra los productos de ejemplo.
+- Al entrar al panel aparecen esos ejemplos con la etiqueta «Ejemplo»: hay un botón para borrarlos.
+- Todo lo que se cambia en el panel se guarda solo (arriba dice «Todo guardado»).
+- Precio: en cada producto se elige «Mostrar precio» o «Consultar precio por mayor».
+- Agotado: se apaga el interruptor «Disponible» y el producto deja de verse, sin borrarse.
+- Excel: «Importar Excel» con la plantilla (fotos pegadas en su fila). «Descargar Excel» baja
+  el catálogo actual para cambiar muchos precios juntos y volver a importarlo.
+
+PARA CAMBIAR EL HORARIO O EL WHATSAPP
+- En el panel, botón «Editar horario y WhatsApp»: se marca cada día abierto o cerrado,
+  con uno o dos turnos. La página se actualiza sola.
